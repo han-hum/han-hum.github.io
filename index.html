@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Button Click Counter with GrowthBook</title>
+    <title>Button Click Counter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -79,6 +79,7 @@
                 document.getElementById('message').innerText = "You clicked the green button";
             }
             document.getElementById('counter').innerText = `Blue: ${blueCount} | Green: ${greenCount}`;
+
 
             if (window.GrowthBook) {
                 window.GrowthBook.track("button_click", {
