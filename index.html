@@ -75,12 +75,17 @@
         script.onload = function () {
           console.log("✅ GrowthBook script loaded!");
 
-          // ✅ Ensure GrowthBook is initialized properly
-          window.GrowthBook = new window.growthbook.GrowthBook({
-            apiHost: "https://cdn.growthbook.io",
-            clientKey: "sdk-Dh8S9w2LjaolYGgk",
-            enableDevMode: true,
-          });
+          // ✅ FIX: Use window.GrowthBook directly
+          if (window.GrowthBook) {
+            console.log("✅ GrowthBook is already available.");
+          } else {
+            console.log("✅ Creating GrowthBook instance...");
+            window.GrowthBook = new GrowthBook({
+              apiHost: "https://cdn.growthbook.io",
+              clientKey: "sdk-Dh8S9w2LjaolYGgk",
+              enableDevMode: true,
+            });
+          }
 
           window.GrowthBook.loadFeatures()
             .then(() => {
