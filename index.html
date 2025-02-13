@@ -1,97 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Button Click Counter</title>
+    
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f8f9fa;
-            padding: 50px;
-        }
-        h1 {
-            color: #333;
-        }
-        .button-container {
-            margin: 20px;
-        }
-        button {
-            font-size: 18px;
-            padding: 10px 20px;
-            margin: 10px;
-            border: none;
-            color: white;
-            cursor: pointer;
-        }
-        .blue-button {
-            background-color: blue;
-        }
-        .green-button {
-            background-color: green;
-        }
-        .message {
-            font-size: 20px;
-            margin-top: 20px;
-            color: #333;
-        }
-        .counter {
-            font-size: 18px;
-            margin-top: 10px;
-            color: #555;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background-color: #f8f9fa;
+        padding: 50px;
+      }
+      h1 {
+        color: #333;
+      }
+      .button-container {
+        margin: 20px;
+      }
+      button {
+        font-size: 18px;
+        padding: 10px 20px;
+        margin: 10px;
+        border: none;
+        color: white;
+        cursor: pointer;
+      }
+      .blue-button {
+        background-color: blue;
+      }
+      .green-button {
+        background-color: green;
+      }
+      .message {
+        font-size: 20px;
+        margin-top: 20px;
+        color: #333;
+      }
+      .counter {
+        font-size: 18px;
+        margin-top: 10px;
+        color: #555;
+      }
     </style>
 
-    <!-- GrowthBook Script -->
+    <!-- ✅ Load GrowthBook Script -->
     <script async
-        data-api-host="https://cdn.growthbook.io"
-        data-client-key="sdk-Dh8S9w2LjaolYGgk"
-        src="https://cdn.jsdelivr.net/npm/@growthbook/growthbook/dist/bundles/auto.min.js">
+      id="growthbook-script"
+      data-api-host="https://cdn.growthbook.io"
+      data-client-key="sdk-Dh8S9w2LjaolYGgk"
+      src="https://cdn.jsdelivr.net/npm/@growthbook/growthbook/dist/bundles/auto.min.js">
     </script>
-</head>
-<body>
+  </head>
 
+  <body>
     <h1>Click the Buttons!</h1>
-    
+
     <div class="button-container">
-        <button class="blue-button" onclick="handleClick('blue')">Blue Button</button>
-        <button class="green-button" onclick="handleClick('green')">Green Button</button>
+      <button id="blue-btn" class="blue-button">Blue Button</button>
+      <button id="green-btn" class="green-button">Green Button</button>
     </div>
 
     <div class="message" id="message"></div>
     <div class="counter" id="counter">Blue: 0 | Green: 0</div>
 
+    <!-- ✅ Ensure GrowthBook Initializes Properly -->
     <script>
-        let blueCount = 0;
-        let greenCount = 0;
+      let blueCount = 0;
+      let greenCount = 0;
 
-        document.addEventListener("growthbook-ready", () => {
-            console.log("GrowthBook is loaded and ready!");
-        });
+      document.addEventListener("DOMContentLoaded", function () {
+        let script = document.querySelector("#growthbook-script");
 
-        function handleClick(color) {
-            if (color === 'blue') {
-                blueCount++;
-                document.getElementById('message').innerText = "You clicked the blue button";
-            } else {
-                greenCount++;
-                document.getElementById('message').innerText = "You clicked the green button";
-            }
-            document.getElementById('counter').innerText = `Blue: ${blueCount} | Green: ${greenCount}`;
+        script.onload = function () {
+          console.log("✅ GrowthBook script loaded!");
 
+          // ✅ Ensure GrowthBook is initialized properly
+          window.GrowthBook = new window.growthbook.GrowthBook({
+            apiHost: "https://cdn.growthbook.io",
+            clientKey: "sdk-Dh8S9w2LjaolYGgk",
+            enableDevMode: true,
+          });
 
-            if (window.GrowthBook) {
-                window.GrowthBook.track("button_click", {
-                    buttonColor: color,
-                    count: color === 'blue' ? blueCount : greenCount
-                });
-                console.log(`Tracked: ${color} button clicked ${color === 'blue' ? blueCount : greenCount} times`);
-            } else {
-                console.warn("GrowthBook is not loaded yet!");
-            }
+          window.GrowthBook.loadFeatures()
+            .then(() => {
+              console.log("✅ GrowthBook Features Loaded:", window.GrowthBook.getFeatures());
+              document.dispatchEvent(new Event("growthbook-ready"));
+            })
+            .catch((err) => console.error("❌ GrowthBook Error:", err));
+        };
+
+        script.onerror = function () {
+          console.error("❌ GrowthBook script failed to load.");
+        };
+      });
+
+      // ✅ Wait for GrowthBook to be ready before using handleClick
+      document.addEventListener("growthbook-ready", () => {
+        console.log("✅ GrowthBook is now ready to use!");
+
+        // ✅ Attach event listeners to buttons
+        document.getElementById("blue-btn").addEventListener("click", () => handleClick("blue"));
+        document.getElementById("green-btn").addEventListener("click", () => handleClick("green"));
+      });
+
+      // ✅ Define handleClick function globally
+      function handleClick(color) {
+        if (color === "blue") {
+          blueCount++;
+          document.getElementById("message").innerText = "You clicked the blue button";
+        } else {
+          greenCount++;
+          document.getElementById("message").innerText = "You clicked the green button";
         }
-    </script>
+        document.getElementById("counter").innerText = `Blue: ${blueCount} | Green: ${greenCount}`;
 
-</body>
+        if (window.GrowthBook) {
+          window.GrowthBook.track("button_click", { buttonColor: color });
+          console.log(`✅ Tracked button click - Color: ${color}`);
+        } else {
+          console.warn("❌ GrowthBook is still not loaded!");
+        }
+      }
+    </script>
+  </body>
 </html>
